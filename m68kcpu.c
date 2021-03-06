@@ -40,7 +40,7 @@
 
 extern void m68040_fpu_op0(void);
 extern void m68040_fpu_op1(void);
-extern void m68881_mmu_ops();
+extern void m68881_mmu_ops(void);
 extern unsigned char m68ki_cycles[][0x10000];
 extern void (*m68ki_instruction_jump_table[0x10000])(void); /* opcode handler jump table */
 extern void m68ki_build_opcode_table(void);
@@ -55,13 +55,13 @@ extern void m68ki_build_opcode_table(void);
 /* ================================= DATA ================================= */
 /* ======================================================================== */
 
-int  m68ki_initial_cycles;
+static int  m68ki_initial_cycles;
 int  m68ki_remaining_cycles = 0;                     /* Number of clocks remaining */
 uint m68ki_tracing = 0;
 uint m68ki_address_space;
 
 #ifdef M68K_LOG_ENABLE
-const char *const m68ki_cpu_names[] =
+static const char *const m68ki_cpu_names[] =
 {
 	"Invalid CPU",
 	"M68000",
