@@ -1,3 +1,10 @@
+
+This clone of MUSASHI has fixes for C-compiler warnings (const strings,
+static stuff, proper prototypes etc.)  No functional changes.   /phk
+
+=======================================================================
+
+
                                     MUSASHI
                                     =======
 
