@@ -194,8 +194,8 @@ typedef struct
 /* All modifications necessary for a specific EA mode of an instruction */
 typedef struct
 {
-	char* fname_add;
-	char* ea_add;
+	const char* fname_add;
+	const char* ea_add;
 	unsigned int mask_add;
 	unsigned int match_add;
 } ea_info_struct;
@@ -218,33 +218,32 @@ typedef struct
 
 
 /* Function Prototypes */
-void error_exit(char* fmt, ...);
-void perror_exit(char* fmt, ...);
-int check_strsncpy(char* dst, char* src, int maxlength);
-int check_atoi(char* str, int *result);
-int skip_spaces(char* str);
-int num_bits(int value);
-int atoh(char* buff);
-int fgetline(char* buff, int nchars, FILE* file);
-int get_oper_cycles(opcode_struct* op, int ea_mode, int cpu_type);
-opcode_struct* find_opcode(char* name, int size, char* spec_proc, char* spec_ea);
-opcode_struct* find_illegal_opcode(void);
-int extract_opcode_info(char* src, char* name, int* size, char* spec_proc, char* spec_ea);
-void add_replace_string(replace_struct* replace, char* search_str, char* replace_str);
-void write_body(FILE* filep, body_struct* body, replace_struct* replace);
-void get_base_name(char* base_name, opcode_struct* op);
-void write_function_name(FILE* filep, char* base_name);
-void add_opcode_output_table_entry(opcode_struct* op, char* name);
+static void error_exit(const char* fmt, ...);
+static void perror_exit(const char* fmt, ...);
+static int check_strsncpy(char* dst, const char* src, int maxlength);
+static int check_atoi(char* str, int *result);
+static int skip_spaces(char* str);
+static int num_bits(int value);
+static int fgetline(char* buff, int nchars, FILE* file);
+static int get_oper_cycles(opcode_struct* op, int ea_mode, int cpu_type);
+static opcode_struct* find_opcode(char* name, int size, char* spec_proc, char* spec_ea);
+static int extract_opcode_info(char* src, char* name, int* size, char* spec_proc, char* spec_ea);
+static void add_replace_string(replace_struct* replace, const char* search_str, const char* replace_str);
+static void write_body(FILE* filep, body_struct* body, replace_struct* replace);
+static void get_base_name(char* base_name, opcode_struct* op);
+static void write_function_name(FILE* filep, char* base_name);
+static void add_opcode_output_table_entry(opcode_struct* op, char* name);
 static int DECL_SPEC compare_nof_true_bits(const void* aptr, const void* bptr);
-void print_opcode_output_table(FILE* filep);
-void write_table_entry(FILE* filep, opcode_struct* op);
-void set_opcode_struct(opcode_struct* src, opcode_struct* dst, int ea_mode);
-void generate_opcode_handler(FILE* filep, body_struct* body, replace_struct* replace, opcode_struct* opinfo, int ea_mode);
-void generate_opcode_ea_variants(FILE* filep, body_struct* body, replace_struct* replace, opcode_struct* op);
-void generate_opcode_cc_variants(FILE* filep, body_struct* body, replace_struct* replace, opcode_struct* op_in, int offset);
-void process_opcode_handlers(FILE* filep);
-void populate_table(void);
-void read_insert(char* insert);
+static void print_opcode_output_table(FILE* filep);
+static void write_table_entry(FILE* filep, opcode_struct* op);
+static void set_opcode_struct(opcode_struct* src, opcode_struct* dst, int ea_mode);
+static void generate_opcode_handler(FILE* filep, body_struct* body, replace_struct* replace, opcode_struct* opinfo, int ea_mode);
+static void generate_opcode_ea_variants(FILE* filep, body_struct* body, replace_struct* replace, opcode_struct* op);
+static void generate_opcode_cc_variants(FILE* filep, body_struct* body, replace_struct* replace, opcode_struct* op_in, int offset);
+static void process_opcode_handlers(FILE* filep);
+static void populate_table(void);
+static void read_insert(char* insert);
+static int check_strcncpy(char* dst, char* src, char delim, int maxlength);
 
 
 
@@ -253,24 +252,24 @@ void read_insert(char* insert);
 /* ======================================================================== */
 
 /* Name of the input file */
-char g_input_filename[M68K_MAX_PATH] = FILENAME_INPUT;
+static char g_input_filename[M68K_MAX_PATH] = FILENAME_INPUT;
 
 /* File handles */
-FILE* g_input_file = NULL;
-FILE* g_prototype_file = NULL;
-FILE* g_table_file = NULL;
+static FILE* g_input_file = NULL;
+static FILE* g_prototype_file = NULL;
+static FILE* g_table_file = NULL;
 
-int g_num_functions = 0;  /* Number of functions processed */
-int g_num_primitives = 0; /* Number of function primitives read */
-int g_line_number = 1;    /* Current line number */
+static int g_num_functions = 0;  /* Number of functions processed */
+static int g_num_primitives = 0; /* Number of function primitives read */
+static int g_line_number = 1;    /* Current line number */
 
 /* Opcode handler table */
-opcode_struct g_opcode_input_table[MAX_OPCODE_INPUT_TABLE_LENGTH];
+static opcode_struct g_opcode_input_table[MAX_OPCODE_INPUT_TABLE_LENGTH];
 
-opcode_struct g_opcode_output_table[MAX_OPCODE_OUTPUT_TABLE_LENGTH];
-int g_opcode_output_table_length = 0;
+static opcode_struct g_opcode_output_table[MAX_OPCODE_OUTPUT_TABLE_LENGTH];
+static int g_opcode_output_table_length = 0;
 
-const ea_info_struct g_ea_info_table[13] =
+static const ea_info_struct g_ea_info_table[13] =
 {/* fname    ea        mask  match */
 	{"",     "",       0x00, 0x00}, /* EA_MODE_NONE */
 	{"ai",   "AY_AI",  0x38, 0x10}, /* EA_MODE_AI   */
@@ -288,7 +287,7 @@ const ea_info_struct g_ea_info_table[13] =
 };
 
 
-const char *const g_cc_table[16][2] =
+static const char *const g_cc_table[16][2] =
 {
 	{ "t",  "T"}, /* 0000 */
 	{ "f",  "F"}, /* 0001 */
@@ -309,7 +308,7 @@ const char *const g_cc_table[16][2] =
 };
 
 /* size to index translator (0 -> 0, 8 and 16 -> 1, 32 -> 2) */
-const int g_size_select_table[33] =
+static const int g_size_select_table[33] =
 {
 	0,												/* unsized */
 	0, 0, 0, 0, 0, 0, 0, 1,							/*    8    */
@@ -319,7 +318,7 @@ const int g_size_select_table[33] =
 
 /* Extra cycles required for certain EA modes */
 /* TODO: correct timings for 030, 040 */
-const int g_ea_cycle_table[13][NUM_CPUS][3] =
+static const int g_ea_cycle_table[13][NUM_CPUS][3] =
 {/*       000           010           020           030           040  */
 	{{ 0,  0,  0}, { 0,  0,  0}, { 0,  0,  0}, { 0,  0,  0}, { 0,  0,  0}}, /* EA_MODE_NONE */
 	{{ 0,  4,  8}, { 0,  4,  8}, { 0,  4,  4}, { 0,  4,  4}, { 0,  4,  4}}, /* EA_MODE_AI   */
@@ -337,7 +336,7 @@ const int g_ea_cycle_table[13][NUM_CPUS][3] =
 };
 
 /* Extra cycles for JMP instruction (000, 010) */
-const int g_jmp_cycle_table[13] =
+static const int g_jmp_cycle_table[13] =
 {
 	 0, /* EA_MODE_NONE */
 	 4, /* EA_MODE_AI   */
@@ -355,7 +354,7 @@ const int g_jmp_cycle_table[13] =
 };
 
 /* Extra cycles for JSR instruction (000, 010) */
-const int g_jsr_cycle_table[13] =
+static const int g_jsr_cycle_table[13] =
 {
 	 0, /* EA_MODE_NONE */
 	 4, /* EA_MODE_AI   */
@@ -373,7 +372,7 @@ const int g_jsr_cycle_table[13] =
 };
 
 /* Extra cycles for LEA instruction (000, 010) */
-const int g_lea_cycle_table[13] =
+static const int g_lea_cycle_table[13] =
 {
 	 0, /* EA_MODE_NONE */
 	 4, /* EA_MODE_AI   */
@@ -391,7 +390,7 @@ const int g_lea_cycle_table[13] =
 };
 
 /* Extra cycles for PEA instruction (000, 010) */
-const int g_pea_cycle_table[13] =
+static const int g_pea_cycle_table[13] =
 {
 	 0, /* EA_MODE_NONE */
 	 6, /* EA_MODE_AI   */
@@ -409,7 +408,7 @@ const int g_pea_cycle_table[13] =
 };
 
 /* Extra cycles for MOVEM instruction (000, 010) */
-const int g_movem_cycle_table[13] =
+static const int g_movem_cycle_table[13] =
 {
 	 0, /* EA_MODE_NONE */
 	 0, /* EA_MODE_AI   */
@@ -427,7 +426,7 @@ const int g_movem_cycle_table[13] =
 };
 
 /* Extra cycles for MOVES instruction (010) */
-const int g_moves_cycle_table[13][3] =
+static const int g_moves_cycle_table[13][3] =
 {
 	{ 0,  0,  0}, /* EA_MODE_NONE */
 	{ 0,  4,  6}, /* EA_MODE_AI   */
@@ -445,7 +444,7 @@ const int g_moves_cycle_table[13][3] =
 };
 
 /* Extra cycles for CLR instruction (010) */
-const int g_clr_cycle_table[13][3] =
+static const int g_clr_cycle_table[13][3] =
 {
 	{ 0,  0,  0}, /* EA_MODE_NONE */
 	{ 0,  4,  6}, /* EA_MODE_AI   */
@@ -469,7 +468,7 @@ const int g_clr_cycle_table[13][3] =
 /* ======================================================================== */
 
 /* Print an error message and exit with status error */
-void error_exit(char* fmt, ...)
+void error_exit(const char* fmt, ...)
 {
 	va_list args;
 	fprintf(stderr, "In %s, near or on line %d:\n\t", g_input_filename, g_line_number);
@@ -486,7 +485,7 @@ void error_exit(char* fmt, ...)
 }
 
 /* Print an error message, call perror(), and exit with status error */
-void perror_exit(char* fmt, ...)
+void perror_exit(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
@@ -503,7 +502,7 @@ void perror_exit(char* fmt, ...)
 
 
 /* copy until 0 or space and exit with error if we read too far */
-int check_strsncpy(char* dst, char* src, int maxlength)
+int check_strsncpy(char* dst, const char* src, int maxlength)
 {
 	char* p = dst;
 	while(*src && *src != ' ')
@@ -565,28 +564,6 @@ int num_bits(int value)
     value = ((value & 0xf0f0) >> 4) + (value & 0x0f0f);
     value = ((value & 0xff00) >> 8) + (value & 0x00ff);
 	return value;
-}
-
-/* Convert a hex value written in ASCII */
-int atoh(char* buff)
-{
-	int accum = 0;
-
-	for(;;buff++)
-	{
-		if(*buff >= '0' && *buff <= '9')
-		{
-			accum <<= 4;
-			accum += *buff - '0';
-		}
-		else if(*buff >= 'a' && *buff <= 'f')
-		{
-			accum <<= 4;
-			accum += *buff - 'a' + 10;
-		}
-		else break;
-	}
-	return accum;
 }
 
 /* Get a line of text from a file, discarding any end-of-line characters */
@@ -673,19 +650,6 @@ opcode_struct* find_opcode(char* name, int size, char* spec_proc, char* spec_ea)
 	return NULL;
 }
 
-/* Specifically find the illegal opcode in the list */
-opcode_struct* find_illegal_opcode(void)
-{
-	opcode_struct* op;
-
-	for(op = g_opcode_input_table;op < &g_opcode_input_table[MAX_OPCODE_INPUT_TABLE_LENGTH];op++)
-	{
-		if(strcmp(op->name, "illegal") == 0)
-			return op;
-	}
-	return NULL;
-}
-
 /* Parse an opcode handler name */
 int extract_opcode_info(char* src, char* name, int* size, char* spec_proc, char* spec_ea)
 {
@@ -722,7 +686,7 @@ int extract_opcode_info(char* src, char* name, int* size, char* spec_proc, char*
 
 
 /* Add a search/replace pair to a replace structure */
-void add_replace_string(replace_struct* replace, char* search_str, char* replace_str)
+void add_replace_string(replace_struct* replace, const char* search_str, const char* replace_str)
 {
 	if(replace->length >= MAX_REPLACE_LENGTH)
 		error_exit("overflow in replace structure");
