@@ -194,8 +194,8 @@ typedef struct
 /* All modifications necessary for a specific EA mode of an instruction */
 typedef struct
 {
-	char* fname_add;
-	char* ea_add;
+	const char* fname_add;
+	const char* ea_add;
 	unsigned int mask_add;
 	unsigned int match_add;
 } ea_info_struct;
@@ -230,7 +230,7 @@ int get_oper_cycles(opcode_struct* op, int ea_mode, int cpu_type);
 opcode_struct* find_opcode(char* name, int size, char* spec_proc, char* spec_ea);
 opcode_struct* find_illegal_opcode(void);
 int extract_opcode_info(char* src, char* name, int* size, char* spec_proc, char* spec_ea);
-void add_replace_string(replace_struct* replace, char* search_str, char* replace_str);
+void add_replace_string(replace_struct* replace, const char* search_str, const char* replace_str);
 void write_body(FILE* filep, body_struct* body, replace_struct* replace);
 void get_base_name(char* base_name, opcode_struct* op);
 void write_function_name(FILE* filep, char* base_name);
@@ -722,7 +722,7 @@ int extract_opcode_info(char* src, char* name, int* size, char* spec_proc, char*
 
 
 /* Add a search/replace pair to a replace structure */
-void add_replace_string(replace_struct* replace, char* search_str, char* replace_str)
+void add_replace_string(replace_struct* replace, const char* search_str, const char* replace_str)
 {
 	if(replace->length >= MAX_REPLACE_LENGTH)
 		error_exit("overflow in replace structure");
